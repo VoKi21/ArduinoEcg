@@ -45,6 +45,7 @@ class StressIndexCalculator:
         self._max_rr = None
         self._min_rr = None
         self._processed_rr_intervals = None
+        self.max_rr_count = -1
         self._rr_intervals = None
         self._peaks = None
 
@@ -69,7 +70,7 @@ class StressIndexCalculator:
         if self._peaks is None:
             mean_ecg = np.mean(self.ecg_values)
             std_ecg = np.std(self.ecg_values)
-            threshold = mean_ecg + 3 * std_ecg
+            threshold = mean_ecg + 2 * std_ecg
             peaks = self.find_peaks(threshold)
             self._peaks = [self.timestamps[i] for i in peaks]
         return self._peaks
@@ -78,12 +79,14 @@ class StressIndexCalculator:
     def rr_intervals(self):
         if self._rr_intervals is None:
             self._rr_intervals = np.diff(self.peaks)
-        return self._rr_intervals
+            if self.max_rr_count > 0:
+                self._rr_intervals = self._rr_intervals[len(self.rr_intervals) - self.max_rr_count:]
+        return self._rr_intervals, self.peaks[:-1]
 
     @property
     def processed_rr_intervals(self):
         if self._processed_rr_intervals is None:
-            intervals = sorted(self.rr_intervals)
+            intervals = sorted(self.rr_intervals[0])
             intervals = remove_outstanding_intervals(intervals) / 1000
             self._processed_rr_intervals = intervals
         return self._processed_rr_intervals
