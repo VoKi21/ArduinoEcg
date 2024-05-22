@@ -202,7 +202,6 @@ class SerialPlotter(QMainWindow):
 
         for i in range(len(stress_indices)):
             curr_time = si_timestamps[i]
-            print(curr_time)
             for j in range(len(new_data)):
                 if new_data[j][0] == curr_time:
                     new_data[j].append(stress_indices[i])
@@ -211,7 +210,6 @@ class SerialPlotter(QMainWindow):
         previous_rr = 0
         previous_si = 0
         for entry in new_data:
-            print(entry)
             if len(entry) < 3:
                 entry.append(previous_rr)
                 entry.append(previous_si)
